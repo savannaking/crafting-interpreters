@@ -90,7 +90,7 @@ class Scanner:
                 return
             case "/":
                 if self.match("/"):
-                    while self.peek() != "\n" and self.isAtEnd() is False:
+                    while self.peek() != "\n" and self.current + 1 < len(self.src):
                         self.advance()
                 else:
                     self.addToken(TokenType.SLASH)
@@ -131,7 +131,7 @@ class Scanner:
         while self.peek().isnumeric():
             self.advance()
 
-        if self.peek() == "." and self.peekNext().isdigit():
+        if self.peek() == "." and self.peek(2).isdigit():
             self.advance()
 
             while self.peek().isdigit():
@@ -140,11 +140,11 @@ class Scanner:
         self.addToken(TokenType.NUMBER, float(self.src[self.start : self.current + 1]))
 
     def string(self):
-        while self.peek() != '"' and self.isAtEnd() is False:
+        while self.peek() != '"' and self.current + 1 < len(self.src):
             if self.peek() == "\n":
                 self.line = self.line + 1
             self.advance()
-        if self.isAtEnd():
+        if self.current + 1 >= len(self.src):
             raise Exception(f"Unterminated string on line ${self.line}")
 
         self.advance()
@@ -170,16 +170,8 @@ class Scanner:
         self.current = self.current + 1
         return self.src[self.current]
 
-    def peek(self):
-        if self.isAtEnd() == True:
+    def peek(self, ahead=1):
+        if self.current + ahead >= len(self.src):
             return "\0"
         else:
-            return self.src[self.current + 1]
-
-    def peekNext(self):
-        if (self.current + 1) >= len(self.src):
-            return "\0"
-        return self.src[self.current]
-
-    def isAtEnd(self):
-        return self.current + 1 >= len(self.src)
+            return self.src[self.current + ahead]
