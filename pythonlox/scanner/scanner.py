@@ -29,7 +29,7 @@ class Scanner:
         }
 
     def scanTokens(self):
-        while self.current < len(self.src):
+        while self.current <= len(self.src) - 1:
             self.start = self.current
             self.scanToken()
         self.tokens.append(Token(TokenType.EOF, "", None, self.line))
